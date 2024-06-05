@@ -1,7 +1,7 @@
 module.exports = {
-    facebook: {
-        FACEBOOK_APP_ID: '323400897453856',
-        FACEBOOK_APP_SECRET: 'bedb172e06e936f2618abe1005ac5034'
+    google: {
+        clientID:'945963150356-eg1esolci7qbngaerv2osuht6vu3i3au.apps.googleusercontent.com',
+        clientSecret:'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',
     },
     mongodb: {
         dbURI: 'mongodb+srv://hichem:login@login.dmthmyh.mongodb.net/'

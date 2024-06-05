@@ -1,6 +1,6 @@
 const passport = require ('passport');
 const router = require('express').Router();
-const FacebookStrategy = require('passport-facebook').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const keys = require('./keys');
 const User = require ('../models/user-model');
 
@@ -19,20 +19,20 @@ passport.serializeUser(function(user, done) {
       });
   });
 
-// Update your Facebook login flow to save the user to your MongoDB database after they log in
-passport.use(new FacebookStrategy({
-  clientID: keys.facebook.FACEBOOK_APP_ID,
-  clientSecret: keys.facebook.FACEBOOK_APP_SECRET,
-  callbackURL: '/auth/facebook/callback'
+// Update your google login flow to save the user to your MongoDB database after they log in
+passport.use(new GoogleStrategy({
+  clientID: keys.google.clientID,
+  clientSecret: keys.google.clientSecret,
+  callbackURL: '/auth/google/callback'
 },
 function(accessToken, refreshToken, profile, done) {
     // Find or create the user in your MongoDB database
-User.findOne({ facebookId: profile.id })
+User.findOne({ googleId: profile.id })
 .then(function(user) {
    if (user) { return done(null, user); }
 
    const newUser = new User({
-     facebookId: profile.id,
+     googleId: profile.id,
      name: profile.displayName,
      email: profile.emails && profile.emails[0] && profile.emails[0].value,
    });
@@ -45,31 +45,15 @@ User.findOne({ facebookId: profile.id })
 .catch(function(err) {
    return done(err);
  });
-  /*Find or create the user in your MongoDB database
-  User.findOne({ facebookId: profile.id }, function(err, user) {
-    if (err) { return done(err); }
-    if (user) { return done(null, user); }
-
-    const newUser = new User({
-      facebookId: profile.id,
-      name: profile.displayName,
-      email: profile.emails[0].value
-    });
-
-    newUser.save(function(err) {
-      if (err) { return done(err); }
-      return done(null, newUser);
-    });
-  });*/
 }));
 
-  // Create a route in your Express app that initiates the Facebook login flow
-router.get('/auth/facebook',
-passport.authenticate('facebook', { scope: ['email'] }));
+  // Create a route in your Express app that initiates the google login flow
+router.get('/auth/google',
+passport.authenticate('google', { scope: ['profile','email'] }));
 
-// Create a route in your Express app that handles the Facebook login callback
-router.get('/auth/facebook/callback',
-passport.authenticate('facebook', { failureRedirect: '/login' }),
+// Create a route in your Express app that handles the google login callback
+router.get('/auth/google/callback',
+passport.authenticate('google', { failureRedirect: '/login' }),
 function(req, res) {
   // Successful authentication, redirect home
   res.redirect('/');
